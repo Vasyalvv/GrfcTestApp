@@ -210,6 +210,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Data\AppDBContext.cs" />
     <Compile Include="Data\Entities\Automobile.cs" />
     <Compile Include="Data\Entities\Base\Entity.cs" />
     <Compile Include="Data\Entities\Base\NamedEntity.cs" />
