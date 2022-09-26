@@ -10,6 +10,10 @@ namespace GrfcTestApp.Data
 {
     public class AppDBContext : DbContext
     {
+        public AppDBContext():base("GrfcDBConnectionString")
+        {
+
+        }
         public DbSet<CarMark> CarMarks { get; set; }
 
         public DbSet<EngineType> EngineTypes { get; set; }
