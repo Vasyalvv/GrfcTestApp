@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,5 +16,17 @@ namespace GrfcTestApp
     /// </summary>
     public partial class App : Application
     {
+        private static IHost _hosting;
+
+        public static IHost Hosting => _hosting ??
+            Host.
+            CreateDefaultBuilder(Environment.GetCommandLineArgs()).
+            ConfigureServices(ConfigureServices).
+            Build();
+
+        private static void ConfigureServices(HostBuilderContext hostContext, IServiceCollection services)
+        {
+
+        }
     }
 }
