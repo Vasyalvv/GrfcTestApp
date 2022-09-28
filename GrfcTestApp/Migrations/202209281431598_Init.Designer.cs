@@ -13,7 +13,7 @@ namespace GrfcTestApp.Data
         
         string IMigrationMetadata.Id
         {
-            get { return "202209262003350_Init"; }
+            get { return "202209281431598_Init"; }
         }
         
         string IMigrationMetadata.Source
