@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GrfcTestApp.Data.Entities
+namespace GrfcTestApp.Data.Entities.Engines
 {
     /// <summary>
-    /// Тип двигателя
+    /// Двигатель
     /// </summary>
-    public class EngineType: NamedEntity
+    public class EngineBase: NamedEntity
     {
+        public override string ToString() => "Двигатель";
     }
 }

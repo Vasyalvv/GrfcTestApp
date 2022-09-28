@@ -1,4 +1,5 @@
 ﻿using GrfcTestApp.Data.Entities.Base;
+using GrfcTestApp.Data.Entities.Engines;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -23,6 +24,6 @@ namespace GrfcTestApp.Data.Entities
         /// Тип двигателя к которому применимы работы
         /// </summary>
         [Required]
-        public EngineType EngineType { get; set; }
+        public EngineBase EngineType { get; set; }
     }
 }

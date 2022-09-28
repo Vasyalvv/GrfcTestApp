@@ -1,4 +1,5 @@
 ﻿using GrfcTestApp.Data.Entities.Base;
+using GrfcTestApp.Data.Entities.Engines;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,6 +19,6 @@ namespace GrfcTestApp.Data.Entities
         public CarMark CarMark { get; set; }
 
         [Required]
-        public EngineType EngineType { get; set; }
+        public EngineBase EngineType { get; set; }
     }
 }

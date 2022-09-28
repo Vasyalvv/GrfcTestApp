@@ -235,7 +235,10 @@
     <Compile Include="Data\Entities\Base\NamedEntity.cs" />
     <Compile Include="Data\Entities\CarMark.cs" />
     <Compile Include="Data\Entities\CarModel.cs" />
-    <Compile Include="Data\Entities\EngineType.cs" />
+    <Compile Include="Data\Entities\Engines\CombustionEngine.cs" />
+    <Compile Include="Data\Entities\Engines\DieselEngine.cs" />
+    <Compile Include="Data\Entities\Engines\EngineBase.cs" />
+    <Compile Include="Data\Entities\Engines\GasEngine.cs" />
     <Compile Include="Data\Entities\Maintenance.cs" />
     <Compile Include="Data\Entities\Operation.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -247,6 +250,10 @@
     <Compile Include="Migrations\202209262003350_Init.cs" />
     <Compile Include="Migrations\202209262003350_Init.designer.cs">
       <DependentUpon>202209262003350_Init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209280601304_Engine.cs" />
+    <Compile Include="Migrations\202209280601304_Engine.designer.cs">
+      <DependentUpon>202209280601304_Engine.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -263,6 +270,9 @@
     </Compile>
     <EmbeddedResource Include="Migrations\202209262003350_Init.resx">
       <DependentUpon>202209262003350_Init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209280601304_Engine.resx">
+      <DependentUpon>202209280601304_Engine.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
