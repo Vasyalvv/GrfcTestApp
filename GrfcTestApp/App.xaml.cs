@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using GrfcTestApp.Data;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,5 +30,14 @@ namespace GrfcTestApp
         {
 
         }
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            using (var db =new AppDBContext())
+            {
+                AppDBContextInitializer.Initialize(db,false);
+            }
+            base.OnStartup(e);
+        }
+
     }
 }

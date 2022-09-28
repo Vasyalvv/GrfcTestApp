@@ -229,6 +229,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Data\AppDBContext.cs" />
+    <Compile Include="Data\AppDBContextInitializer.cs" />
     <Compile Include="Data\Configuration.cs" />
     <Compile Include="Data\Entities\Automobile.cs" />
     <Compile Include="Data\Entities\Base\Entity.cs" />
@@ -247,13 +248,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Migrations\202209262003350_Init.cs" />
-    <Compile Include="Migrations\202209262003350_Init.designer.cs">
-      <DependentUpon>202209262003350_Init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202209280601304_Engine.cs" />
-    <Compile Include="Migrations\202209280601304_Engine.designer.cs">
-      <DependentUpon>202209280601304_Engine.cs</DependentUpon>
+    <Compile Include="Migrations\202209281431598_Init.cs" />
+    <Compile Include="Migrations\202209281431598_Init.designer.cs">
+      <DependentUpon>202209281431598_Init.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -268,16 +265,16 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Migrations\202209262003350_Init.resx">
-      <DependentUpon>202209262003350_Init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202209280601304_Engine.resx">
-      <DependentUpon>202209280601304_Engine.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202209281431598_Init.resx">
+      <DependentUpon>202209281431598_Init.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Data\TestData\cars.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -287,6 +284,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
