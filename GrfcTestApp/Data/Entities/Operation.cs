@@ -25,5 +25,7 @@ namespace GrfcTestApp.Data.Entities
         /// </summary>
         [Required]
         public EngineBase EngineType { get; set; }
+
+        public ICollection<Maintenance> Maintenances { get; set; }
     }
 }
