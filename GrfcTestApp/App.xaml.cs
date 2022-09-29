@@ -32,11 +32,18 @@ namespace GrfcTestApp
         }
         protected override void OnStartup(StartupEventArgs e)
         {
+            base.OnStartup(e);
             using (var db =new AppDBContext())
             {
                 AppDBContextInitializer.Initialize(db,false);
             }
-            base.OnStartup(e);
+            Hosting.Start();
+        }
+        protected override async void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+            await Hosting.StopAsync().ConfigureAwait(false);
+            Hosting.Dispose()
         }
 
     }
