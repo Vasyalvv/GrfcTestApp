@@ -24,5 +24,7 @@ namespace GrfcTestApp.Services.Interfaces
         bool Remove(T item);
 
         T Update(int id, T item);
+
+        T FirstOrCreate(T item);
     }
 }

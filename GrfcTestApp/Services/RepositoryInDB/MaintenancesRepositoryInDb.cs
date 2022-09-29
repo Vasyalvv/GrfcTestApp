@@ -2,6 +2,7 @@
 using GrfcTestApp.Data.Entities;
 using GrfcTestApp.Data.Entities.Engines;
 using GrfcTestApp.Services.Base;
+using GrfcTestApp.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,15 @@ namespace GrfcTestApp.Services.RepositoryInDB
 {
     public class MaintenancesRepositoryInDb : RepositoryInDb<Maintenance>
     {
-        public MaintenancesRepositoryInDb(AppDBContext db) : base(db)
+        private readonly IRepository<Automobile> _AutoRepos;
+        private readonly IRepository<Operation> _OperRepos;
+
+        public MaintenancesRepositoryInDb(AppDBContext db,
+            IRepository<Automobile> autoRepos,
+            IRepository<Operation> operRepos) : base(db)
         {
+            _AutoRepos = autoRepos;
+            _OperRepos = operRepos;
         }
 
         public override IEnumerable<Maintenance> GetAll()
@@ -28,44 +36,41 @@ namespace GrfcTestApp.Services.RepositoryInDB
         protected override Maintenance Update(Maintenance source, Maintenance destination)
         {
             destination.DateTime = source.DateTime;
-            var auto = _db.Automobiles.FirstOrDefault(a => a.Id == source.Automobile.Id) ??
-                _db.Automobiles.FirstOrDefault(a => a.RegistrationNumber == source.Automobile.RegistrationNumber) ??
-                new Automobile
-                {
-                    RegistrationNumber = source.Automobile.RegistrationNumber,
-                    CarModel = _db.CarModels.FirstOrDefault(c => c.Id == source.Automobile.CarModel.Id) ??
-                        _db.CarModels.FirstOrDefault(c => c.Name == source.Automobile.CarModel.Name) ??
-                        new CarModel
-                        {
-                            Name = source.Automobile.CarModel.Name,
-                            CarMark = _db.CarMarks.FirstOrDefault(c => c.Id == source.Automobile.CarModel.CarMark.Id) ??
-                                _db.CarMarks.FirstOrDefault(c => c.Name == source.Automobile.CarModel.CarMark.Name) ??
-                                new CarMark { Name = source.Automobile.CarModel.CarMark.Name },
-                            EngineType = _db.EngineTypes.FirstOrDefault(e => e.Id == source.Automobile.CarModel.EngineType.Id) ??
-                                _db.EngineTypes.FirstOrDefault(e => e.Name == source.Automobile.CarModel.EngineType.Name) ??
-                                new EngineBase { Name = source.Automobile.CarModel.EngineType.Name }
-                        }
-                };
-            destination.Automobile = auto;
+
+            destination.Automobile = _AutoRepos.FirstOrCreate(source.Automobile);
 
             foreach (var operation in source.Operation)
             {
-                var oper = _db.Operations.FirstOrDefault(o => o.Id == operation.Id) ??
-                    _db.Operations.FirstOrDefault(o => o.Description == operation.Description) ??
-                    new Operation
-                    {
-                        Description = operation.Description,
-                        EngineType = _db.EngineTypes.FirstOrDefault(e => e.Id == operation.EngineType.Id) ??
-                                _db.EngineTypes.FirstOrDefault(e => e.Name == operation.EngineType.Name) ??
-                                new EngineBase { Name = operation.EngineType.Name }
-                    };
-                if (!(oper is null))
-                    destination.Operation.Add(oper);
+                destination.Operation.Add(_OperRepos.FirstOrCreate(operation));
             }
 
             _db.SaveChanges();
 
             return _dbSet.FirstOrDefault(m => m.DateTime == destination.DateTime && m.Automobile == destination.Automobile);
+        }
+
+        public override Maintenance FirstOrCreate(Maintenance item)
+        {
+            var result = _dbSet.FirstOrDefault(m => m.Id == item.Id);
+
+            if (result is null)
+            {
+                result = new Maintenance
+                {
+                    DateTime = item.DateTime,
+                    Automobile = _AutoRepos.FirstOrCreate(item.Automobile)
+                };
+                foreach (var oper in item.Operation)
+                {
+                    result.Operation.Add(_OperRepos.FirstOrCreate(oper));
+                }
+
+                _db.SaveChanges();
+
+                result = _dbSet.FirstOrDefault(m => (m.DateTime == result.DateTime) && (m.Automobile == result.Automobile));
+            }
+
+            return result;
         }
     }
 }

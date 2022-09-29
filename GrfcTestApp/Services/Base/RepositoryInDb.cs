@@ -68,7 +68,9 @@ namespace GrfcTestApp.Services.Base
 
         //Нужно обязательно переопределять в конкретных реализациях
         protected abstract T Update(T source, T destination);
-
+        
+        //Нужно обязательно переопределять в конкретных реализациях
+        public abstract T FirstOrCreate(T item);
 
         #region IDisposable
 

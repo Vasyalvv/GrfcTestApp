@@ -2,6 +2,7 @@
 using GrfcTestApp.Data.Entities;
 using GrfcTestApp.Data.Entities.Engines;
 using GrfcTestApp.Services.Base;
+using GrfcTestApp.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,15 @@ namespace GrfcTestApp.Services.RepositoryInDB
 {
     public class CarModelsRepositoryInDb : RepositoryInDb<CarModel>
     {
-        public CarModelsRepositoryInDb(AppDBContext db) : base(db)
+        private readonly IRepository<EngineBase> _EngineRepos;
+        private readonly IRepository<CarMark> _MarkRepos;
+
+        public CarModelsRepositoryInDb(AppDBContext db, 
+            IRepository<EngineBase> engineRepos,
+            IRepository<CarMark> markRepos) : base(db)
         {
+            _EngineRepos = engineRepos;
+            _MarkRepos = markRepos;
         }
 
         public override IEnumerable<CarModel> GetAll()
@@ -25,18 +33,34 @@ namespace GrfcTestApp.Services.RepositoryInDB
         {
             destination.Name = source.Name;
 
-            var engine = _db.EngineTypes.FirstOrDefault(e => e.Id == source.EngineType.Id) ??
-                     _db.EngineTypes.FirstOrDefault(e => e.Name == source.EngineType.Name) ??
-                     new EngineBase { Name = source.EngineType.Name };
-            destination.EngineType = engine;
+            destination.EngineType = _EngineRepos.FirstOrCreate(source.EngineType);
 
-            var mark = _db.CarMarks.FirstOrDefault(m => m.Id == source.CarMark.Id) ??
-                    _db.CarMarks.FirstOrDefault(m => m.Name == source.CarMark.Name) ??
-                    new CarMark { Name = source.CarMark.Name };
-            destination.CarMark = mark;
+            destination.CarMark = _MarkRepos.FirstOrCreate(source.CarMark);
 
             _db.SaveChanges();
             return _dbSet.FirstOrDefault(c => c.Name == destination.Name);
+        }
+
+        public override CarModel FirstOrCreate(CarModel item)
+        {
+            var result = _dbSet.FirstOrDefault(c => c.Id == item.Id) ??
+                _dbSet.FirstOrDefault(c => c.Name == item.Name);
+
+            if(result is null)
+            {
+                result = new CarModel
+                {
+                    Name = item.Name,
+                    CarMark = _MarkRepos.FirstOrCreate(item.CarMark),
+                    EngineType = _EngineRepos.FirstOrCreate(item.EngineType)
+                };
+                _dbSet.Add(result);
+                _db.SaveChanges();
+
+                result = _dbSet.FirstOrDefault(c => c.Name == result.Name);
+            }
+
+            return result;
         }
     }
 }

@@ -2,6 +2,7 @@
 using GrfcTestApp.Data.Entities;
 using GrfcTestApp.Data.Entities.Engines;
 using GrfcTestApp.Services.Base;
+using GrfcTestApp.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,11 @@ namespace GrfcTestApp.Services.RepositoryInDB
 {
     public class AutomobilesRepositoryInDb : RepositoryInDb<Automobile>
     {
-        public AutomobilesRepositoryInDb(AppDBContext db) : base(db)
+        private readonly IRepository<CarModel> _ModelRepos;
+
+        public AutomobilesRepositoryInDb(AppDBContext db, IRepository<CarModel> modelRepos) : base(db)
         {
+            _ModelRepos = modelRepos;
         }
 
         public override IEnumerable<Automobile> GetAll()
@@ -24,22 +28,32 @@ namespace GrfcTestApp.Services.RepositoryInDB
         protected override Automobile Update(Automobile source, Automobile destination)
         {
             destination.RegistrationNumber = source.RegistrationNumber;
-            var model = _db.CarModels.FirstOrDefault(c => c.Id == source.CarModel.Id) ??
-                _db.CarModels.FirstOrDefault(c => c.Name == source.CarModel.Name) ??
-                new CarModel
-                {
-                    CarMark = _db.CarMarks.FirstOrDefault(c => c.Id == source.CarModel.CarMark.Id) ??
-                        _db.CarMarks.FirstOrDefault(c => c.Name == source.CarModel.CarMark.Name) ??
-                        new CarMark { Name = source.CarModel.CarMark.Name },
-                    EngineType = _db.EngineTypes.FirstOrDefault(e => e.Id == source.CarModel.EngineType.Id) ??
-                        _db.EngineTypes.FirstOrDefault(e => e.Name == source.CarModel.EngineType.Name) ??
-                        new EngineBase { Name = source.CarModel.EngineType.Name },
-                    Name = source.CarModel.Name
-                };
-            destination.CarModel = model;
+
+            destination.CarModel = _ModelRepos.FirstOrCreate(source.CarModel);
+
             _db.SaveChanges();
 
             return _dbSet.FirstOrDefault(a => a.RegistrationNumber == destination.RegistrationNumber);
+        }
+
+        public override Automobile FirstOrCreate(Automobile item)
+        {
+            var result = _dbSet.FirstOrDefault(a => a.Id == item.Id) ??
+                _dbSet.FirstOrDefault(a => a.RegistrationNumber == item.RegistrationNumber);
+
+            if(result is null)
+            {
+                result = new Automobile
+                {
+                    RegistrationNumber = item.RegistrationNumber,
+                    CarModel = _ModelRepos.FirstOrCreate(item.CarModel)
+                };
+                _dbSet.Add(result);
+                _db.SaveChanges();
+
+                result = _dbSet.FirstOrDefault(a => a.RegistrationNumber==result.RegistrationNumber);
+            }
+            return result;
         }
     }
 }

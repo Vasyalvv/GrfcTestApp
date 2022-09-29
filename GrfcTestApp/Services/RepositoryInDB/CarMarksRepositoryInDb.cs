@@ -14,12 +14,29 @@ namespace GrfcTestApp.Services.RepositoryInDB
         public CarMarksRepositoryInDb(AppDBContext db) : base(db)
         {
         }
-        
+
         protected override CarMark Update(CarMark source, CarMark destination)
         {
             destination.Name = source.Name;
             _db.SaveChanges();
             return destination;
+        }
+
+        public override CarMark FirstOrCreate(CarMark item)
+        {
+            var result = _dbSet.FirstOrDefault(c => c.Id == item.Id) ??
+                _dbSet.FirstOrDefault(c => c.Name == item.Name);
+
+            if(result is null)
+            {
+                result = new CarMark { Name = item.Name };
+                _dbSet.Add(result);
+                _db.SaveChanges();
+
+                result = _dbSet.FirstOrDefault(c => c.Name == item.Name);
+            }
+
+            return result;
         }
     }
 }

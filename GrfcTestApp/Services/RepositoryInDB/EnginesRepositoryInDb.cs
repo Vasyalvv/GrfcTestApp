@@ -21,5 +21,32 @@ namespace GrfcTestApp.Services.RepositoryInDB
             _db.SaveChanges();
             return destination;
         }
+
+        public override EngineBase FirstOrCreate(EngineBase item)
+        {
+            var result = _dbSet.FirstOrDefault(e => e.Id == item.Id) ??
+                _dbSet.FirstOrDefault(e => e.Name == item.Name);
+
+            if (result is null)
+            {
+                if (item.GetType().Equals(typeof(GasEngine)))
+                    result = new GasEngine { Name = item.Name };
+                else if (item.GetType().Equals(typeof(DieselEngine)))
+                    result = new DieselEngine { Name = item.Name };
+                else if (item.GetType().Equals(typeof(CombustionEngine)))
+                    result = new CombustionEngine { Name = item.Name };
+                else
+                    result = new EngineBase { Name = item.Name };
+
+                _dbSet.Add(result);
+                _db.SaveChanges();
+
+                result = _dbSet.FirstOrDefault(e => e.Name == item.Name);
+            }
+                        
+            return result;
+        }
+
     }
+}
 }
