@@ -35,17 +35,22 @@ namespace GrfcTestApp.Data
         /// <param name="context">Контекст БД</param>
         private static void DBContextTestDataInit(AppDBContext context)
         {
+            Random random = new Random(DateTime.Now.Millisecond);
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
+
             #region Записываем двигатели в БД
+
             var diesel = new DieselEngine { Name = "Дизельный двигатель" };
             var gas = new GasEngine { Name = "Бензиновый двигатель" };
             context.DieselEngines.Add(diesel);
             context.GasEngines.Add(gas);
             context.SaveChanges();
+
             #endregion
 
             #region Записываем работы в БД
+
             context.Operations.Add(new Operation { EngineType = diesel, Description = "ТО-1 дизельного двигателя" });
             context.Operations.Add(new Operation { EngineType = diesel, Description = "ТО-2 дизельного двигателя" });
             context.Operations.Add(new Operation { EngineType = diesel, Description = "ТО-3 дизельного двигателя" });
@@ -63,13 +68,16 @@ namespace GrfcTestApp.Data
             List<(string Mark, string Model)> carList = ModelsFromCsv();
 
             #region Формируем список уникальных марок автомобилей
+
             var marks = carList
                 .Select(c => c.Mark)
                 .Distinct()
                 .Select(c => new CarMark { Name = c });
+
             #endregion
 
             #region Записываем модели и марки автомобилей в БД
+
             var models = carList
                 .Join(marks,
                     c => c.Mark,
@@ -78,12 +86,13 @@ namespace GrfcTestApp.Data
                     {
                         Name = c.Model,
                         CarMark = m,
-                        EngineType = RandomEngine(context.EngineTypes.ToList())
+                        EngineType = RandomEngine(context.EngineTypes.ToList(), random)
                     }
                 )
                 .ToList<CarModel>();
             context.CarModels.AddRange(models);
             context.SaveChanges();
+
             #endregion
 
             #region Записываем регистрационные номера автомобилей
@@ -94,8 +103,8 @@ namespace GrfcTestApp.Data
                 .Range(1, 1000)
                 .Select(p => new Automobile
                 {
-                    RegistrationNumber = RegistrationNumberGenerator(p),
-                    CarModel = RandomCarModel(carModels, p)
+                    RegistrationNumber = RegistrationNumberGenerator(random),
+                    CarModel = RandomCarModel(carModels,random)
                 })
                 .ToList();
 
@@ -106,7 +115,6 @@ namespace GrfcTestApp.Data
             #region Заполняем список проведенных ТО
 
             DateTime date = new DateTime(2021, 01, 01);
-            Random rnd = new Random();
             List<Maintenance> maintenances = new List<Maintenance>();
             List<Automobile> automobiles = context.Automobiles.ToList();
             List<Operation> allOperations = context.Operations.ToList();
@@ -114,10 +122,10 @@ namespace GrfcTestApp.Data
             do
             {                
                 //До 10 записей проведенных работ ежедневно
-                for (int i = 0; i < rnd.Next(10); i++)
+                for (int i = 0; i < random.Next(10); i++)
                 {
-                    Automobile newAuto = RandomAutomobile(automobiles, i);
-                    ICollection<Operation> operations = RandomOperation(allOperations, newAuto.CarModel.EngineType, i);
+                    Automobile newAuto = RandomAutomobile(automobiles,random);
+                    ICollection<Operation> operations = RandomOperation(allOperations, newAuto.CarModel.EngineType, random);
                     maintenances.Add(new Maintenance
                     {
                         DateTime = date.AddDays(days),
@@ -129,6 +137,7 @@ namespace GrfcTestApp.Data
             } while (date.AddDays(days).Year == 2021);
             context.Maintenances.AddRange(maintenances);
             context.SaveChanges();
+
             #endregion
 
             stopwatch.Stop();
@@ -178,27 +187,29 @@ namespace GrfcTestApp.Data
         /// </summary>
         /// <param name="engines">Список двигателей</param>
         /// <returns>Двигатель</returns>
-        private static EngineBase RandomEngine(List<EngineBase> engines)
+        private static EngineBase RandomEngine(List<EngineBase> engines, Random random = null)
         {
-            Random rnd = new Random();
-            return engines[rnd.Next(engines.Count)];
+            if(random is null)
+                random = new Random(DateTime.Now.Millisecond);
+            return engines[random.Next(engines.Count)];
         }
 
         /// <summary>
         /// Функция генерирует случайные регистрационный номер автомобиля
         /// </summary>
         /// <returns>Регистрационный номер автомобиля</returns>
-        private static string RegistrationNumberGenerator(int seed)
+        private static string RegistrationNumberGenerator(Random random=null)
         {
+            if (random is null)
+                random = new Random();
 
             StringBuilder regNum = new StringBuilder(15);
-            Random rnd = new Random(seed);
             regNum.AppendFormat("{0} {1:d3} {2}{3} {4:d2}RUS",
-                GetNextChar(seed++),
-                rnd.Next(1, 999),
-                GetNextChar(seed++),
-                GetNextChar(seed),
-                rnd.Next(10, 199));
+                GetNextChar(random),
+                random.Next(1, 999),
+                GetNextChar(random),
+                GetNextChar(random),
+                random.Next(10, 199));
             return regNum.ToString();
         }
 
@@ -207,10 +218,11 @@ namespace GrfcTestApp.Data
         /// </summary>
         /// <param name="carModels">Список моделей автомобилей</param>
         /// <returns>Модель автомобиля</returns>
-        private static CarModel RandomCarModel(List<CarModel> carModels, int seed)
+        private static CarModel RandomCarModel(List<CarModel> carModels, Random random = null)
         {
-            Random rnd = new Random(seed);
-            return carModels[rnd.Next(carModels.Count)];
+            if (random is null)
+                random = new Random();
+            return carModels[random.Next(carModels.Count)];
         }
 
         /// <summary>
@@ -218,13 +230,14 @@ namespace GrfcTestApp.Data
         /// </summary>
         /// <param name="seed"></param>
         /// <returns>Очередной символ</returns>
-        private static char GetNextChar(int seed)
+        private static char GetNextChar(Random random = null)
         {
-            Random rnd = new Random(seed);
+            if (random is null)
+                random = new Random();
             char c;
             do
             {
-                c = (char)rnd.Next(0x0410, 0x42F);
+                c = (char)random.Next(0x0410, 0x42F);
             } while (!"АВЕКМНОРСТУХ".Contains(c)); //Буквы используемые в номерах
             return c;
         }
@@ -235,10 +248,11 @@ namespace GrfcTestApp.Data
         /// <param name="automobiles">Список автомобилей</param>
         /// <param name="seed"></param>
         /// <returns>Автомобиль</returns>
-        private static Automobile RandomAutomobile(List<Automobile> automobiles, int seed)
+        private static Automobile RandomAutomobile(List<Automobile> automobiles, Random random = null)
         {
-            Random rnd = new Random(seed);
-            return automobiles[rnd.Next(automobiles.Count)];
+            if (random is null)
+                random = new Random();
+            return automobiles[random.Next(automobiles.Count)];
         }
 
         /// <summary>
@@ -247,15 +261,16 @@ namespace GrfcTestApp.Data
         /// <param name="automobiles">Список автомобилей</param>
         /// <param name="seed"></param>
         /// <returns>Автомобиль</returns>
-        private static ICollection<Operation> RandomOperation(List<Operation> operations, EngineBase engineBase, int seed)
+        private static ICollection<Operation> RandomOperation(List<Operation> operations, EngineBase engineBase, Random random = null)
         {
-            Random rnd = new Random(seed);
+            if (random is null)
+                random = new Random();
             var allowedOperations = operations.FindAll(o=>o.EngineType==engineBase).ToList();
             List<Operation> result = new List<Operation>();
-            int operationsCount = rnd.Next(1, allowedOperations.Count);
+            int operationsCount = random.Next(1, allowedOperations.Count);
             do
             {
-                var nextOper = allowedOperations[rnd.Next(allowedOperations.Count)];
+                var nextOper = allowedOperations[random.Next(allowedOperations.Count)];
                 if (!result.Contains(nextOper))
                     result.Add(nextOper);
             } while (result.Count< operationsCount);
