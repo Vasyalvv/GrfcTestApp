@@ -225,6 +225,12 @@
     <Compile Include="Infrastructure\Commands\LambdaCommand.cs" />
     <Compile Include="Services\Base\RepositoryInDb.cs" />
     <Compile Include="Services\Interfaces\IRepository.cs" />
+    <Compile Include="Services\RepositoryInDB\AutomobilesRepositoryInDb.cs" />
+    <Compile Include="Services\RepositoryInDB\CarMarksRepositoryInDb.cs" />
+    <Compile Include="Services\RepositoryInDB\CarModelsRepositoryInDb.cs" />
+    <Compile Include="Services\RepositoryInDB\EnginesRepositoryInDb.cs" />
+    <Compile Include="Services\RepositoryInDB\MaintenancesRepositoryInDb.cs" />
+    <Compile Include="Services\RepositoryInDB\OperationsRepositoryInDb.cs" />
     <Compile Include="ViewModels\Base\ViewModelBase.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -244,6 +250,7 @@
     <Compile Include="Data\Entities\Engines\GasEngine.cs" />
     <Compile Include="Data\Entities\Maintenance.cs" />
     <Compile Include="Data\Entities\Operation.cs" />
+    <Compile Include="ViewModels\LocatorViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
