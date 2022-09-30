@@ -21,5 +21,10 @@ namespace GrfcTestApp.Data.Entities
 
         [Required]
         public CarModel CarModel { get; set; }
+
+        public override string ToString()
+        {
+            return RegistrationNumber;
+        }
     }
 }

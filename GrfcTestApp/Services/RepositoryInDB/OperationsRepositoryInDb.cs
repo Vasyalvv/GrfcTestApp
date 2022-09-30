@@ -14,14 +14,11 @@ namespace GrfcTestApp.Services.RepositoryInDB
     public class OperationsRepositoryInDb : RepositoryInDb<Operation>
     {
         private readonly IRepository<EngineBase> _EngineRepos;
-        private readonly IRepository<Maintenance> _MaintRepos;
 
         public OperationsRepositoryInDb(AppDBContext db,
-            IRepository<EngineBase> engineRepos,
-            IRepository<Maintenance> maintRepos) : base(db)
+            IRepository<EngineBase> engineRepos) : base(db)
         {
             _EngineRepos = engineRepos;
-            _MaintRepos = maintRepos;
         }
 
         public override IEnumerable<Operation> GetAll()

@@ -27,5 +27,10 @@ namespace GrfcTestApp.Data.Entities
         /// </summary>
         [Required]
         public ICollection<Operation> Operation { get; set; }
+
+        public override string ToString()
+        {
+            return Automobile.RegistrationNumber;
+        }
     }
 }
