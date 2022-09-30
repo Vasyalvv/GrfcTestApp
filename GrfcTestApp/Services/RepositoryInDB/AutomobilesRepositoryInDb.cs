@@ -5,6 +5,7 @@ using GrfcTestApp.Services.Base;
 using GrfcTestApp.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,6 +55,17 @@ namespace GrfcTestApp.Services.RepositoryInDB
                 result = _dbSet.FirstOrDefault(a => a.RegistrationNumber==result.RegistrationNumber);
             }
             return result;
+        }
+
+        public override bool Remove(Automobile item)
+        {
+            if (!requiredDataLoaded)
+            {
+                _db.Maintenances.Load();
+                requiredDataLoaded = true;
+            }
+
+            return base.Remove(item);
         }
     }
 }

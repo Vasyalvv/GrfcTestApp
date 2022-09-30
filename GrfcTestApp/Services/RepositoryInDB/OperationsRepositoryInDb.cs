@@ -5,6 +5,7 @@ using GrfcTestApp.Services.Base;
 using GrfcTestApp.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,7 +55,7 @@ namespace GrfcTestApp.Services.RepositoryInDB
             var result = _dbSet.FirstOrDefault(o => o.Id == item.Id) ??
                 _dbSet.FirstOrDefault(o => o.Description == item.Description);
 
-            if(result is null)
+            if (result is null)
             {
                 result = new Operation
                 {
@@ -69,10 +70,22 @@ namespace GrfcTestApp.Services.RepositoryInDB
                 }
 
                 _db.SaveChanges();
-                result = _dbSet.FirstOrDefault(o=>o.Description==result.Description);
+                result = _dbSet.FirstOrDefault(o => o.Description == result.Description);
             }
 
             return result;
+        }
+
+        public override bool Remove(Operation item)
+        {
+            if (!requiredDataLoaded)
+            {
+                _db.Automobiles.Load();
+                _db.Maintenances.Load();
+                requiredDataLoaded = true;
+            }
+
+            return base.Remove(item);
         }
     }
 }

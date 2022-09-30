@@ -18,6 +18,11 @@ namespace GrfcTestApp.Services.Base
         internal readonly AppDBContext _db;
         internal readonly DbSet<T> _dbSet;
 
+        /// <summary>
+        /// Данные из связанных таблиц загружены
+        /// </summary>
+        internal bool requiredDataLoaded=false;
+
         public RepositoryInDb(AppDBContext db)
         {
             _db = db;
@@ -38,7 +43,14 @@ namespace GrfcTestApp.Services.Base
         //Нужно переопределить в реализации, если в запросе учавствуют связанные таблицы
         public virtual IEnumerable<T> GetAll() => _dbSet.ToList();
 
-        public bool Remove(T item)
+        /// <summary>
+        /// Удаление данных, в перегруженных методах нужно подгрузить связанные таблицы, 
+        /// иначе удаление может пройти не каскадно, в зависимости от загруженных данных в контексе
+        /// на момент удаления
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public virtual bool Remove(T item)
         {
             try
             {

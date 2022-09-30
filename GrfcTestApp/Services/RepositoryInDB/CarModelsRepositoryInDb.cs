@@ -5,6 +5,7 @@ using GrfcTestApp.Services.Base;
 using GrfcTestApp.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,6 +62,18 @@ namespace GrfcTestApp.Services.RepositoryInDB
             }
 
             return result;
+        }
+
+        public override bool Remove(CarModel item)
+        {
+            if (!requiredDataLoaded)
+            {
+                _db.Automobiles.Load();
+                _db.Maintenances.Load();
+                requiredDataLoaded = true;
+            }
+
+            return base.Remove(item);
         }
     }
 }
